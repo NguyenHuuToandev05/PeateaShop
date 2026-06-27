@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { font-family: 'Nunito', sans-serif; }
+  body { @apply bg-pink-50 text-gray-800; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-pink-500 text-white font-bold py-3 px-6 rounded-full hover:bg-pink-600 
+           transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-outline {
+    @apply border-2 border-pink-500 text-pink-500 font-bold py-3 px-6 rounded-full 
+           hover:bg-pink-50 transition-all duration-200 active:scale-95;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-pink-100;
+  }
+  .input-field {
+    @apply w-full border border-pink-200 rounded-xl px-4 py-3 text-sm
+           focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100
+           placeholder:text-gray-400 bg-white transition-all;
+  }
+  .badge-new {
+    @apply bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full;
+  }
+  .badge-sold-out {
+    @apply bg-gray-600 text-white text-xs font-bold px-2 py-1 rounded-full;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #FFF0F5; }
+::-webkit-scrollbar-thumb { background: #FFC2D4; border-radius: 3px; }

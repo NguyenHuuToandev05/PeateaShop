@@ -1,0 +1,81 @@
+package com.cuteshop.controller;
+
+import com.cuteshop.dto.request.ProductRequest;
+import com.cuteshop.dto.response.ResponseDTOs.*;
+import com.cuteshop.service.impl.ProductServiceImpl;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+public class ProductController {
+
+    private final ProductServiceImpl productService;
+
+    // ── Public ───────────────────────────────────────────────────────────────
+    @GetMapping("/products")
+    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        return ResponseEntity.ok(ApiResponse.success(productService.getAll(page, size)));
+    }
+
+    @GetMapping("/products/featured")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getFeatured() {
+        return ResponseEntity.ok(ApiResponse.success(productService.getFeatured()));
+    }
+
+    @GetMapping("/products/new-arrivals")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getNewArrivals() {
+        return ResponseEntity.ok(ApiResponse.success(productService.getNewArrivals()));
+    }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(productService.getById(id)));
+    }
+
+    @GetMapping("/products/search")
+    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> search(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Boolean newArrival,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "newest") String sort) {
+        return ResponseEntity.ok(ApiResponse.success(
+                productService.search(keyword, categoryId, minPrice, maxPrice, newArrival, page, size, sort)));
+    }
+
+    // ── Admin ─────────────────────────────────────────────────────────────────
+    @PostMapping("/admin/products")
+    public ResponseEntity<ApiResponse<ProductResponse>> create(@Valid @RequestBody ProductRequest req) {
+        return ResponseEntity.ok(ApiResponse.success("Product created", productService.create(req)));
+    }
+
+    @PutMapping("/admin/products/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> update(
+            @PathVariable Long id,
+            @RequestBody(required = false) ProductRequest req) {
+        if (req == null) req = new ProductRequest();
+        return ResponseEntity.ok(ApiResponse.success("Product updated", productService.update(id, req)));
+    }
+
+    @DeleteMapping("/admin/products/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        productService.delete(id);
+        return ResponseEntity.ok(ApiResponse.success("Product deleted", null));
+    }
+
+    @PatchMapping("/admin/products/{id}/toggle")
+    public ResponseEntity<ApiResponse<ProductResponse>> toggle(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(productService.toggleActive(id)));
+    }
+}
