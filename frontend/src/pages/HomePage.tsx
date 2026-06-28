@@ -33,7 +33,7 @@ export default function HomePage() {
               🌟 New arrivals just dropped ✦
             </span>
             <h1 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight mb-3">
-              Squishy Heaven PH
+              Peatea Squishy
             </h1>
             <p className="text-2xl mb-2">🌸</p>
             <p className="text-gray-600 font-medium mb-8 max-w-md">
@@ -99,7 +99,7 @@ export default function HomePage() {
       {/* ── Taobao CTA ── */}
       <section className="bg-taobao-gradient mx-4 md:mx-8 rounded-3xl px-8 py-14 text-center mb-14">
         <div className="text-4xl mb-4">🛒</div>
-        <h2 className="text-2xl md:text-3xl font-black text-white mb-3">
+        <h2 className="text-2xl md:text-3xl font-black text-purple-600 mb-3">
           Want something from Taobao?
         </h2>
         <p className="text-white/90 font-medium mb-6 max-w-lg mx-auto">

@@ -24,6 +24,30 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
+    @PutMapping("/auth/profile")
+    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(@RequestBody java.util.Map<String, String> body) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+        if (body.get("fullName") != null) user.setFullName(body.get("fullName"));
+        if (body.get("phone") != null) user.setPhone(body.get("phone"));
+        if (body.get("address") != null) user.setAddress(body.get("address"));
+        if (body.get("city") != null) user.setCity(body.get("city"));
+        if (body.get("province") != null) user.setProvince(body.get("province"));
+        return ResponseEntity.ok(ApiResponse.success(toUserResponse(userRepository.save(user))));
+    }
+
+    @PutMapping("/auth/password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(@RequestBody java.util.Map<String, String> body) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow();
+        if (!passwordEncoder.matches(body.get("currentPassword"), user.getPassword())) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Mật khẩu hiện tại không đúng"));
+        }
+        user.setPassword(passwordEncoder.encode(body.get("newPassword")));
+        userRepository.save(user);
+        return ResponseEntity.ok(ApiResponse.success("Đổi mật khẩu thành công", null));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody AuthRequest.Register req) {
         if (userRepository.existsByEmail(req.getEmail())) {

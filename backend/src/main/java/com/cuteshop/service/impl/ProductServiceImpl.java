@@ -2,7 +2,6 @@ package com.cuteshop.service.impl;
 
 import com.cuteshop.dto.request.ProductRequest;
 import com.cuteshop.dto.response.ResponseDTOs.*;
-import com.cuteshop.entity.Category;
 import com.cuteshop.entity.Product;
 import com.cuteshop.repository.CategoryRepository;
 import com.cuteshop.repository.ProductRepository;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +21,7 @@ public class ProductServiceImpl {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final CloudinaryService cloudinaryService;
 
     public PageResponse<ProductResponse> getAll(int page, int size) {
         Page<Product> p = productRepository.findByActiveTrue(PageRequest.of(page, size, Sort.by("createdAt").descending()));
@@ -76,15 +77,27 @@ public class ProductServiceImpl {
     public ProductResponse update(Long id, ProductRequest req) {
         Product p = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        if (req.getName() != null) p.setName(req.getName());
-        if (req.getDescription() != null) p.setDescription(req.getDescription());
-        if (req.getPrice() != null) p.setPrice(req.getPrice());
-        if (req.getStock() != null) p.setStock(req.getStock());
-        if (req.getImageUrls() != null) p.setImageUrls(req.getImageUrls());
-        if (req.getVariants() != null) p.setVariants(req.getVariants());
-        if (req.getActive() != null) p.setActive(req.getActive());
-        if (req.getNewArrival() != null) p.setNewArrival(req.getNewArrival());
-        if (req.getFeatured() != null) p.setFeatured(req.getFeatured());
+
+        // Nếu imageUrls thay đổi → xoá ảnh cũ trên Cloudinary
+        if (req.getImageUrls() != null) {
+            List<String> oldUrls = new ArrayList<>(p.getImageUrls());
+            List<String> newUrls = req.getImageUrls();
+            // Tìm ảnh bị xoá khỏi danh sách
+            oldUrls.stream()
+                    .filter(url -> !newUrls.contains(url))
+                    .filter(url -> url.contains("cloudinary.com")) // chỉ xoá ảnh Cloudinary
+                    .forEach(cloudinaryService::deleteByUrl);
+            p.setImageUrls(newUrls);
+        }
+
+        if (req.getName() != null)        p.setName(req.getName());
+        if (req.getDescription() != null)  p.setDescription(req.getDescription());
+        if (req.getPrice() != null)        p.setPrice(req.getPrice());
+        if (req.getStock() != null)        p.setStock(req.getStock());
+        if (req.getVariants() != null)     p.setVariants(req.getVariants());
+        if (req.getActive() != null)       p.setActive(req.getActive());
+        if (req.getNewArrival() != null)   p.setNewArrival(req.getNewArrival());
+        if (req.getFeatured() != null)     p.setFeatured(req.getFeatured());
         if (req.getCategoryId() != null) {
             categoryRepository.findById(req.getCategoryId()).ifPresent(p::setCategory);
         }
@@ -92,12 +105,24 @@ public class ProductServiceImpl {
     }
 
     @Transactional
-    public void delete(Long id) { productRepository.deleteById(id); }
+    public void delete(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Xoá tất cả ảnh trên Cloudinary trước
+        List<String> cloudinaryUrls = product.getImageUrls().stream()
+                .filter(url -> url.contains("cloudinary.com"))
+                .collect(Collectors.toList());
+        cloudinaryService.deleteMultiple(cloudinaryUrls);
+
+        productRepository.deleteById(id);
+    }
 
     @Transactional
     public ProductResponse toggleActive(Long id) {
         Product p = productRepository.findById(id).orElseThrow();
         p.setActive(!p.getActive());
+        // Toggle KHÔNG xoá ảnh — vì có thể bật lại sau
         return toResponse(productRepository.save(p));
     }
 

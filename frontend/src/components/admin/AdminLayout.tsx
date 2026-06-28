@@ -24,7 +24,7 @@ export default function AdminLayout() {
         <div className="px-5 py-5 border-b border-gray-100">
           <Link to="/" className="flex items-center gap-2 font-extrabold text-pink-500">
             <Flower2 size={20} className="fill-pink-400" />
-            <span className="text-sm">Squishy Heaven</span>
+            <span className="text-sm">Peatea Squishy</span>
           </Link>
           <p className="text-xs text-gray-400 mt-0.5 ml-7">Admin Panel</p>
         </div>

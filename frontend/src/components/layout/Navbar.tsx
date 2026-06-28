@@ -13,7 +13,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-extrabold text-pink-500 text-lg">
           <Flower2 size={22} className="fill-pink-400 text-pink-500" />
-          Squishy Heaven PH
+          Peatea Squishy
         </Link>
 
         {/* Nav links */}

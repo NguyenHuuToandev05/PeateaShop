@@ -2,7 +2,7 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -37,6 +37,10 @@ export const authService = {
   register: (data: { fullName: string; email: string; password: string; phone: string }) =>
     api.post('/auth/register', data),
   me: () => api.get('/auth/me'),
+  updateProfile: (data: { fullName: string; phone: string; address?: string; city?: string; province?: string }) =>
+    api.put('/auth/profile', data),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    api.put('/auth/password', data),
 }
 
 // ─── Products ─────────────────────────────────────────────────────────────────
