@@ -3,7 +3,7 @@ node_modules/
 dist/
 .cache/
 
-# Environment - QUAN TRỌNG: không commit file này lên git!
+
 .env
 .env.local
 .env.production

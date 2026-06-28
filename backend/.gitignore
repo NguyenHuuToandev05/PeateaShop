@@ -9,7 +9,6 @@ target/
 *.iml
 .vscode/
 
-# Environment - QUAN TRỌNG: không commit file này lên git!
 .env
 *.env
 
