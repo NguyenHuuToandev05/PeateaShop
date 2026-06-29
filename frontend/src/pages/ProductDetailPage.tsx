@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ShoppingCart, Zap, Heart, ChevronLeft, Star, Package } from 'lucide-react'
 import { productService } from '../services/api'
 import { useCartStore, useWishlistStore } from '../store'
@@ -33,6 +33,7 @@ export default function ProductDetailPage() {
   const [qty, setQty] = useState(1)
   const addItem = useCartStore(s => s.addItem)
   const { toggle, has } = useWishlistStore()
+  const navigate = useNavigate()
 
   useEffect(() => {
     setActiveImg(0); setQty(1); setVariant(undefined)
@@ -55,9 +56,12 @@ export default function ProductDetailPage() {
     addItem(product, variant, qty)
     toast.success(`${qty}x ${product.name} added to cart! 🛒`)
   }
+
   const handleBuyNow = () => {
-    handleAddCart()
-    window.location.href = '/cart'
+    if (product.variants.length && !variant) { toast.error('Please select a variant first!'); return }
+    // Thêm vào cart nhưng không toast, redirect thẳng sang cart/checkout
+    addItem(product, variant, qty)
+    navigate('/cart')
   }
 
   return (
@@ -100,7 +104,7 @@ export default function ProductDetailPage() {
 
           {/* Price */}
           <div className="flex items-baseline gap-3 mb-2">
-            <span className="text-3xl font-black text-pink-500">₱{product.price.toLocaleString()}</span>
+            <span className="text-3xl font-black text-pink-500">{product.price.toLocaleString()} VND</span>
           </div>
 
           {/* Stock */}

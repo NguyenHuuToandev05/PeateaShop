@@ -5,7 +5,7 @@ import { useCartStore } from '../store'
 import { orderService } from '../services/api'
 import toast from 'react-hot-toast'
 
-const PROVINCES = ['Metro Manila','Cebu','Davao del Sur','Rizal','Laguna','Cavite','Bulacan','Batangas','Pampanga','Quezon']
+const PROVINCES = ['Hà Nội', 'TP. Hồ Chí Minh', 'Đà Nẵng', 'Bình Dương', 'Đồng Nai', 'Hải Phòng', 'Cần Thơ', 'Quảng Ninh', 'Khánh Hòa', 'Nghệ An'];
 
 type PayMethod = 'BANK_TRANSFER' | 'COD'
 

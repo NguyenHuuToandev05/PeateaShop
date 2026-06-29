@@ -64,7 +64,7 @@ export default function ProductCard({ product }: Props) {
         {/* Price + Cart */}
         <div className="flex items-center justify-between">
           <div>
-            <span className="font-extrabold text-pink-500">₱{product.price.toLocaleString()}</span>
+            <span className="font-extrabold text-pink-500">{product.price.toLocaleString()} VND</span>
           </div>
           <button
             onClick={handleAddToCart}

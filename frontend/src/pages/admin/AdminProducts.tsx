@@ -156,7 +156,7 @@ export default function AdminProducts() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-gray-500">{p.categoryName}</td>
-                <td className="px-4 py-3 font-bold text-pink-500">₱{p.price.toLocaleString()}</td>
+                <td className="px-4 py-3 font-bold text-pink-500">{p.price.toLocaleString()} VND</td>
                 <td className="px-4 py-3">
                   <span className={`font-semibold ${p.stock === 0 ? 'text-red-500' : p.stock < 5 ? 'text-yellow-500' : 'text-gray-700'}`}>
                     {p.stock}
@@ -244,7 +244,7 @@ export default function AdminProducts() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs font-bold text-gray-500 mb-1 block">Giá (₱) *</label>
+                    <label className="text-xs font-bold text-gray-500 mb-1 block">Giá (VND) *</label>
                     <input type="number" className="input-field" placeholder="189"
                       value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
                   </div>

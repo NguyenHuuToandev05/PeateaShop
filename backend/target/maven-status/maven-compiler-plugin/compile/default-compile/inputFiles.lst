@@ -9,6 +9,7 @@
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/security/UserDetailsServiceImpl.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/repository/ProductRepository.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/service/impl/OrderServiceImpl.java
+/Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/service/impl/CloudinaryService.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/repository/TaobaoOrderRepository.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/config/AppConfig.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/config/SecurityConfig.java
@@ -16,6 +17,8 @@
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/security/JwtUtils.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/repository/CategoryRepository.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/entity/BaseEntity.java
+/Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/controller/ImageController.java
+/Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/config/CloudinaryConfig.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/controller/TaobaoOrderController.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/controller/CategoryController.java
 /Users/nguyenhuutoan/Documents/Mycode/Peatea/backend/src/main/java/com/cuteshop/entity/OrderItem.java

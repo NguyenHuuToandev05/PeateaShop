@@ -54,7 +54,7 @@ export default function ShopPage() {
     (!newOnly || p.newArrival)
   )
 
-  const clearFilters = () => { setSelectedCat(null); setMaxPrice(1000); setNewOnly(false) }
+  const clearFilters = () => { setSelectedCat(null); setMaxPrice(500000); setNewOnly(false) }
 
   const FilterPanel = () => (
     <div className="card p-5 space-y-5">
@@ -90,15 +90,15 @@ export default function ShopPage() {
       {/* Price range */}
       <div>
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-          Price Range <span className="text-pink-500 normal-case font-bold">₱0 – ₱{maxPrice}</span>
+          Price Range <span className="text-pink-500 normal-case font-bold">0VND – {maxPrice}VND</span>
         </p>
         <input
-          type="range" min={50} max={1000} step={50} value={maxPrice}
+          type="range" min={10000} max={1000000} step={20000} value={maxPrice}
           onChange={e => setMaxPrice(+e.target.value)}
           className="w-full accent-pink-500"
         />
         <div className="flex justify-between text-xs text-gray-400 mt-1">
-          <span>₱50</span><span>₱1000</span>
+          <span>10.000VND</span><span>1.000.000VND</span>
         </div>
       </div>
 
