@@ -223,7 +223,7 @@ export default function AccountPage() {
               </div>
               <div className="border-t border-pink-50 pt-2 mt-2 flex justify-between items-center">
                 <p className="text-sm text-gray-500">{o.paymentMethod === 'COD' ? 'COD' : 'Chuyển khoản'}</p>
-                <p className="font-extrabold text-pink-500">₱{o.total?.toLocaleString()}</p>
+                <p className="font-extrabold text-pink-500">₱{o.total?.toLocaleString('vi-VN')}đ</p>
               </div>
             </div>
           ))}

@@ -1,6 +1,7 @@
 package com.cuteshop.service.impl;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +26,19 @@ public class CloudinaryService {
 
     // Upload 1 file → trả về URL
     public String upload(MultipartFile file) throws IOException {
+        Transformation transformation = new Transformation()
+                .width(800)
+                .height(800)
+                .crop("limit")
+                .chain()
+                .quality("auto")
+                .fetchFormat("auto");
+
         Map<?, ?> result = cloudinary.uploader().upload(
                 file.getBytes(),
                 ObjectUtils.asMap(
                         "folder",          folder + "/products",
-                        "transformation",  List.of(
-                                Map.of("width", 800, "height", 800, "crop", "limit"),
-                                Map.of("quality", "auto", "fetch_format", "auto")
-                        ),
+                        "transformation",  transformation,
                         "resource_type",   "image"
                 )
         );

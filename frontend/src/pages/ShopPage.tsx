@@ -4,13 +4,15 @@ import ProductCard from '../components/ui/ProductCard'
 import { productService, categoryService } from '../services/api'
 import type { Product, Category } from '../types'
 
+const vnd = (n: number) => n.toLocaleString('vi-VN') + 'đ'
+
 const MOCK_PRODUCTS: Product[] = [
-  { id: 1, name: 'Strawberry Mochi Squishy', description: '', price: 189, stock: 24, imageUrls: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'], variants: ['Pink','Yellow','Mint'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 128, createdAt: '' },
-  { id: 2, name: 'Bunny Plushie Pillow', description: '', price: 349, stock: 12, imageUrls: ['https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 94, createdAt: '' },
-  { id: 3, name: 'Rainbow Cat Figurine Set', description: '', price: 420, stock: 8, imageUrls: ['https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400'], variants: [], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 47, createdAt: '' },
-  { id: 4, name: 'Teddy Bear Plush Buddy', description: '', price: 280, stock: 0, imageUrls: ['https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 203, createdAt: '' },
-  { id: 5, name: 'Fox Kitsune Mask Set', description: '', price: 350, stock: 15, imageUrls: ['https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=400'], variants: [], categoryId: 3, categoryName: 'Stationery', active: true, newArrival: true, featured: false, soldCount: 30, createdAt: '' },
-  { id: 6, name: 'Cloud Pillow Squishy', description: '', price: 199, stock: 5, imageUrls: ['https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=400'], variants: ['White','Pink'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: false, featured: false, soldCount: 60, createdAt: '' },
+  { id: 1, name: 'Strawberry Mochi Squishy', description: '', price: 189000, stock: 24, imageUrls: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'], variants: ['Pink','Yellow','Mint'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 128, createdAt: '' },
+  { id: 2, name: 'Bunny Plushie Pillow', description: '', price: 349000, stock: 12, imageUrls: ['https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 94, createdAt: '' },
+  { id: 3, name: 'Rainbow Cat Figurine Set', description: '', price: 420000, stock: 8, imageUrls: ['https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400'], variants: [], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 47, createdAt: '' },
+  { id: 4, name: 'Teddy Bear Plush Buddy', description: '', price: 280000, stock: 0, imageUrls: ['https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 203, createdAt: '' },
+  { id: 5, name: 'Fox Kitsune Mask Set', description: '', price: 350000, stock: 15, imageUrls: ['https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=400'], variants: [], categoryId: 3, categoryName: 'Stationery', active: true, newArrival: true, featured: false, soldCount: 30, createdAt: '' },
+  { id: 6, name: 'Cloud Pillow Squishy', description: '', price: 199000, stock: 5, imageUrls: ['https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=400'], variants: ['White','Pink'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: false, featured: false, soldCount: 60, createdAt: '' },
 ]
 const MOCK_CATS: Category[] = [
   { id: 1, name: 'Squishy', description: '', imageUrl: '', active: true, productCount: 4 },
@@ -26,7 +28,7 @@ export default function ShopPage() {
 
   // Filters
   const [selectedCat, setSelectedCat] = useState<number | null>(null)
-  const [maxPrice, setMaxPrice] = useState(1000)
+  const [maxPrice, setMaxPrice] = useState(1000000)
   const [newOnly, setNewOnly] = useState(false)
 
   const loadData = useCallback(async () => {
@@ -54,7 +56,7 @@ export default function ShopPage() {
     (!newOnly || p.newArrival)
   )
 
-  const clearFilters = () => { setSelectedCat(null); setMaxPrice(500000); setNewOnly(false) }
+  const clearFilters = () => { setSelectedCat(null); setMaxPrice(1000); setNewOnly(false) }
 
   const FilterPanel = () => (
     <div className="card p-5 space-y-5">
@@ -90,15 +92,15 @@ export default function ShopPage() {
       {/* Price range */}
       <div>
         <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-          Price Range <span className="text-pink-500 normal-case font-bold">0VND – {maxPrice}VND</span>
+          Price Range <span className="text-pink-500 normal-case font-bold">0đ – {vnd(maxPrice)}</span>
         </p>
         <input
-          type="range" min={10000} max={1000000} step={20000} value={maxPrice}
+          type="range" min={50000} max={1000000} step={50000} value={maxPrice}
           onChange={e => setMaxPrice(+e.target.value)}
           className="w-full accent-pink-500"
         />
         <div className="flex justify-between text-xs text-gray-400 mt-1">
-          <span>10.000VND</span><span>1.000.000VND</span>
+          <span>50.000đ</span><span>1.000.000đ</span>
         </div>
       </div>
 

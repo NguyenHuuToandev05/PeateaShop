@@ -40,7 +40,7 @@ export default function LoginPage() {
             <div className="w-14 h-14 bg-pink-100 rounded-2xl flex items-center justify-center">
               <Flower2 size={28} className="text-pink-500 fill-pink-300" />
             </div>
-            <span className="font-extrabold text-pink-500 text-lg">Squishy Heaven PH</span>
+            <span className="font-extrabold text-pink-500 text-lg">Peatea Squishy</span>
           </Link>
           <p className="text-gray-400 text-sm mt-2">Đăng nhập vào tài khoản của bạn</p>
         </div>

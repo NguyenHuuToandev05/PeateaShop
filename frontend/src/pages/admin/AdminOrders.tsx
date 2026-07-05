@@ -14,10 +14,10 @@ const STATUS_COLORS: Record<string, string> = {
 const STATUSES = ['PENDING','PROCESSING','SHIPPED','COMPLETED','CANCELLED']
 
 const MOCK: Order[] = [
-  { id:1, orderCode:'SH-001', recipientName:'Maria Santos', recipientPhone:'09171234567', shippingAddress:'123 St', shippingCity:'QC', shippingProvince:'Metro Manila', subtotal:189, shippingFee:80, total:269, status:'PENDING', paymentMethod:'COD', paymentStatus:'PENDING', items:[], createdAt:'2024-01-15T10:30:00', updatedAt:'' },
-  { id:2, orderCode:'SH-002', recipientName:'Jasmine Lim', recipientPhone:'09181234567', shippingAddress:'456 Ave', shippingCity:'Makati', shippingProvince:'Metro Manila', subtotal:349, shippingFee:80, total:429, status:'PROCESSING', paymentMethod:'BANK_TRANSFER', paymentStatus:'PAID', items:[], createdAt:'2024-01-15T09:15:00', updatedAt:'' },
-  { id:3, orderCode:'SH-003', recipientName:'Bea Dela Cruz', recipientPhone:'09191234567', shippingAddress:'789 Rd', shippingCity:'Cebu', shippingProvince:'Cebu', subtotal:420, shippingFee:80, total:500, status:'SHIPPED', paymentMethod:'BANK_TRANSFER', paymentStatus:'PAID', items:[], createdAt:'2024-01-14T16:00:00', updatedAt:'' },
-  { id:4, orderCode:'SH-004', recipientName:'Ana Reyes', recipientPhone:'09201234567', shippingAddress:'321 Blvd', shippingCity:'Davao', shippingProvince:'Davao del Sur', subtotal:280, shippingFee:80, total:360, status:'COMPLETED', paymentMethod:'COD', paymentStatus:'PAID', items:[], createdAt:'2024-01-14T11:00:00', updatedAt:'' },
+  { id:1, userId:1, orderCode:'SH-001', recipientName:'Nguyễn Văn A', recipientPhone:'0901234567', shippingAddress:'123 Đường ABC', shippingCity:'Quận 1', shippingProvince:'TP. Hồ Chí Minh', subtotal:189000, shippingFee:30000, total:219000, status:'PENDING', paymentMethod:'COD', paymentStatus:'PENDING', items:[], createdAt:'2024-01-15T10:30:00', updatedAt:'' },
+  { id:2, userId:2, orderCode:'SH-002', recipientName:'Trần Thị B', recipientPhone:'0912345678', shippingAddress:'456 Đường XYZ', shippingCity:'Hoàn Kiếm', shippingProvince:'Hà Nội', subtotal:349000, shippingFee:30000, total:379000, status:'PROCESSING', paymentMethod:'BANK_TRANSFER', paymentStatus:'PAID', items:[], createdAt:'2024-01-15T09:15:00', updatedAt:'' },
+  { id:3, userId:3, orderCode:'SH-003', recipientName:'Lê Văn C', recipientPhone:'0923456789', shippingAddress:'789 Đường DEF', shippingCity:'Hải Châu', shippingProvince:'Đà Nẵng', subtotal:420000, shippingFee:30000, total:450000, status:'SHIPPED', paymentMethod:'BANK_TRANSFER', paymentStatus:'PAID', items:[], createdAt:'2024-01-14T16:00:00', updatedAt:'' },
+  { id:4, userId:4, orderCode:'SH-004', recipientName:'Phạm Thị D', recipientPhone:'0934567890', shippingAddress:'321 Đường GHI', shippingCity:'Ninh Kiều', shippingProvince:'Cần Thơ', subtotal:280000, shippingFee:30000, total:310000, status:'COMPLETED', paymentMethod:'COD', paymentStatus:'PAID', items:[], createdAt:'2024-01-14T11:00:00', updatedAt:'' },
 ]
 
 export default function AdminOrders() {
@@ -89,12 +89,17 @@ export default function AdminOrders() {
                   <td className="px-4 py-3 font-bold text-pink-500">{o.orderCode}</td>
                   <td className="px-4 py-3 font-semibold text-gray-700">{o.recipientName}</td>
                   <td className="px-4 py-3 text-gray-500">{o.recipientPhone}</td>
-                  <td className="px-4 py-3 font-bold">₱{o.total.toLocaleString()}</td>
+                  <td className="px-4 py-3 font-bold">{o.total.toLocaleString("vi-VN") + "đ"}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs font-semibold px-2 py-1 rounded-full
                       ${o.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                       {o.paymentStatus}
                     </span>
+                    {o.paymentProofUrl && (
+                      <span className="ml-1 text-xs bg-blue-100 text-blue-600 font-semibold px-1.5 py-0.5 rounded-full">
+                        📸
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs font-semibold px-2 py-1 rounded-full ${STATUS_COLORS[o.status]}`}>
@@ -135,8 +140,20 @@ export default function AdminOrders() {
                 <p><span className="text-gray-400">Phone:</span> <span className="font-semibold">{selected.recipientPhone}</span></p>
                 <p><span className="text-gray-400">Address:</span> <span className="font-semibold">{selected.shippingAddress}, {selected.shippingCity}, {selected.shippingProvince}</span></p>
                 <p><span className="text-gray-400">Payment:</span> <span className="font-semibold">{selected.paymentMethod} • {selected.paymentStatus}</span></p>
-                <p><span className="text-gray-400">Total:</span> <span className="font-bold text-pink-500">₱{selected.total.toLocaleString()}</span></p>
+                <p><span className="text-gray-400">Total:</span> <span className="font-bold text-pink-500">₱{selected.total.toLocaleString('vi-VN')}đ</span></p>
               </div>
+
+              {/* Payment proof image */}
+              {selected.paymentProofUrl && (
+                <div className="mb-5">
+                  <p className="text-xs font-bold text-gray-500 mb-2">📸 Ảnh minh chứng chuyển khoản</p>
+                  <a href={selected.paymentProofUrl} target="_blank" rel="noreferrer">
+                    <img src={selected.paymentProofUrl} alt="Minh chứng"
+                      className="w-full rounded-2xl object-cover max-h-52 hover:opacity-90 transition-opacity cursor-zoom-in border border-pink-100" />
+                  </a>
+                  <p className="text-xs text-gray-400 mt-1">Click để xem ảnh đầy đủ</p>
+                </div>
+              )}
 
               {/* Update status */}
               <div className="mb-4">

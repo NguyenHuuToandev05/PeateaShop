@@ -10,6 +10,9 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       }
-    }
+    },
+    allowedHosts: [
+      'raffle-growl-trash.ngrok-free.dev' // Thêm cái link ngrok của bạn vào đây
+    ]
   }
 })

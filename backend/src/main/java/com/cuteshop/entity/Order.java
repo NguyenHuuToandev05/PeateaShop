@@ -70,6 +70,9 @@ public class Order extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String adminNote;
 
+    @Column
+    private String paymentProofUrl;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();

@@ -3,13 +3,15 @@ package com.cuteshop.controller;
 import com.cuteshop.dto.request.CreateOrderRequest;
 import com.cuteshop.dto.response.ResponseDTOs.*;
 import com.cuteshop.entity.Order;
+import com.cuteshop.repository.OrderRepository;
+import com.cuteshop.service.impl.CloudinaryService;
 import com.cuteshop.service.impl.OrderServiceImpl;
 import jakarta.validation.Valid;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.Map;
 public class OrderController {
 
     private final OrderServiceImpl orderService;
+    private final OrderRepository orderRepository;
+    private final CloudinaryService cloudinaryService;
 
     // ── Customer ──────────────────────────────────────────────────────────────
     @PostMapping("/orders")
@@ -35,6 +39,23 @@ public class OrderController {
     @GetMapping("/orders/{id}")
     public ResponseEntity<ApiResponse<OrderResponse>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(orderService.getById(id)));
+    }
+
+    // Upload ảnh minh chứng thanh toán
+    @PatchMapping("/orders/{id}/payment-proof")
+    public ResponseEntity<ApiResponse<OrderResponse>> uploadPaymentProof(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            Order order = orderRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+            String url = cloudinaryService.upload(file);
+            order.setPaymentProofUrl(url);
+            orderRepository.save(order);
+            return ResponseEntity.ok(ApiResponse.success("Đã gửi ảnh minh chứng!", orderService.toResponse(order)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Upload thất bại: " + e.getMessage()));
+        }
     }
 
     // ── Admin ─────────────────────────────────────────────────────────────────

@@ -33,7 +33,7 @@ export default function HomePage() {
               🌟 New arrivals just dropped ✦
             </span>
             <h1 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight mb-3">
-              Peatea Squishy
+              Peatea Squishy  
             </h1>
             <p className="text-2xl mb-2">🌸</p>
             <p className="text-gray-600 font-medium mb-8 max-w-md">
@@ -99,7 +99,7 @@ export default function HomePage() {
       {/* ── Taobao CTA ── */}
       <section className="bg-taobao-gradient mx-4 md:mx-8 rounded-3xl px-8 py-14 text-center mb-14">
         <div className="text-4xl mb-4">🛒</div>
-        <h2 className="text-2xl md:text-3xl font-black text-purple-600 mb-3">
+        <h2 className="text-2xl md:text-3xl font-black text-white mb-3">
           Want something from Taobao?
         </h2>
         <p className="text-white/90 font-medium mb-6 max-w-lg mx-auto">
@@ -159,8 +159,8 @@ export default function HomePage() {
 
 // ── Mock data fallback ─────────────────────────────────────────────────────────
 const MOCK_FEATURED: Product[] = [
-  { id: 1, name: 'Strawberry Mochi Squishy', description: '', price: 189, stock: 24, imageUrls: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'], variants: ['Pink','Yellow','Mint'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 128, createdAt: '' },
-  { id: 2, name: 'Bunny Plushie Pillow', description: '', price: 349, stock: 12, imageUrls: ['https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 94, createdAt: '' },
-  { id: 3, name: 'Rainbow Cat Figurine Set', description: '', price: 420, stock: 8, imageUrls: ['https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400'], variants: [], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 47, createdAt: '' },
-  { id: 4, name: 'Teddy Bear Plush Buddy', description: '', price: 280, stock: 0, imageUrls: ['https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 203, createdAt: '' },
+  { id: 1, name: 'Strawberry Mochi Squishy', description: '', price: 189000, stock: 24, imageUrls: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'], variants: ['Pink','Yellow','Mint'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 128, createdAt: '' },
+  { id: 2, name: 'Bunny Plushie Pillow', description: '', price: 349000, stock: 12, imageUrls: ['https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 94, createdAt: '' },
+  { id: 3, name: 'Rainbow Cat Figurine Set', description: '', price: 420000, stock: 8, imageUrls: ['https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400'], variants: [], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 47, createdAt: '' },
+  { id: 4, name: 'Teddy Bear Plush Buddy', description: '', price: 280000, stock: 0, imageUrls: ['https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 203, createdAt: '' },
 ]

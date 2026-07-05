@@ -1,10 +1,12 @@
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
-
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
+  },
 })
 
 // Attach JWT token
@@ -71,6 +73,13 @@ export const orderService = {
   create: (data: unknown) => api.post('/orders', data),
   getMyOrders: () => api.get('/orders/my'),
   getById: (id: number) => api.get(`/orders/${id}`),
+  uploadPaymentProof: (id: number, file: File) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return api.patch(`/orders/${id}/payment-proof`, fd, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+  },
   // Admin
   getAll: (params?: Record<string, unknown>) => api.get('/admin/orders', { params }),
   updateStatus: (id: number, status: string, adminNote?: string) =>

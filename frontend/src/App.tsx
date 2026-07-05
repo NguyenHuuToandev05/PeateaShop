@@ -18,6 +18,9 @@ import AdminTaobaoOrders from './pages/admin/AdminTaobaoOrders'
 import AdminProducts from './pages/admin/AdminProducts'
 import AdminCustomers from './pages/admin/AdminCustomers'
 import AdminLogin from './pages/admin/AdminLogin'
+import Wishlist from './pages/WishlistPage'
+import NotificationsPage from './pages/NotificationPage'
+import QRDepositPage from './pages/QrdepositPage'
 
 function CustomerLayout({ children }: { children: React.ReactNode }) {
   const TiktokIcon = ({ size = 20, className = "" }) => (
@@ -43,8 +46,8 @@ function CustomerLayout({ children }: { children: React.ReactNode }) {
               <div className="flex gap-3">
                 {[
                   { icon: <Instagram size={18} />, label: 'Instagram', href: 'https://www.instagram.com/tiemnhatea10/', color: 'hover:text-pink-600' },
-                  { icon: <Facebook size={18} />,  label: 'Facebook',  href: 'https://facebook.com',  color: 'hover:text-blue-600' },
-                  { icon: <TiktokIcon size={16} />, label: 'TikTok',    href: 'https://www.tiktok.com/@tiemteasquishy._.t',    color: 'hover:text-black' },
+                  { icon: <Facebook size={18} />, label: 'Facebook', href: 'https://facebook.com', color: 'hover:text-blue-600' },
+                  { icon: <TiktokIcon size={16} />, label: 'TikTok', href: 'https://www.tiktok.com/@tiemteasquishy._.t', color: 'hover:text-black' },
                 ].map((s) => (
                   <a
                     key={s.label}
@@ -118,8 +121,10 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/account" element={<CustomerLayout><AccountPage /></CustomerLayout>} />
         <Route path="/cart" element={<CustomerLayout><CartPage /></CustomerLayout>} />
-        <Route path="/wishlist" element={<CustomerLayout><ShopPage /></CustomerLayout>} />
+        <Route path="/wishlist" element={<CustomerLayout><Wishlist /></CustomerLayout>} />
         <Route path="/taobao" element={<CustomerLayout><TaobaoPage /></CustomerLayout>} />
+        <Route path="/notifications" element={<CustomerLayout><NotificationsPage /></CustomerLayout>} />
+        <Route path="/checkout/deposit" element={<CustomerLayout><QRDepositPage /></CustomerLayout>} />
 
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminLayout />}>

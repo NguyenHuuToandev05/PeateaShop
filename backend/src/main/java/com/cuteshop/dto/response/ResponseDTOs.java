@@ -95,6 +95,7 @@ public class ResponseDTOs {
         private String paymentStatus;
         private String status;
         private String adminNote;
+        private String paymentProofUrl;
         private List<OrderItemResponse> items;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;

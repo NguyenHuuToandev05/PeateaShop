@@ -7,6 +7,8 @@ import ProductCard from '../components/ui/ProductCard'
 import toast from 'react-hot-toast'
 import type { Product } from '../types'
 
+const vnd = (n: number) => n.toLocaleString('vi-VN') + 'đ'
+
 const MOCK: Product = {
   id: 1, name: 'Strawberry Mochi Squishy', price: 189, stock: 24,
   description: 'Super slow-rising strawberry mochi squishy! Made from premium memory foam, this adorable squishy is scented with a sweet strawberry fragrance. Perfect for stress relief and collection!',
@@ -104,7 +106,7 @@ export default function ProductDetailPage() {
 
           {/* Price */}
           <div className="flex items-baseline gap-3 mb-2">
-            <span className="text-3xl font-black text-pink-500">{product.price.toLocaleString()} VND</span>
+            <span className="text-3xl font-black text-pink-500">{vnd(product.price)}</span>
           </div>
 
           {/* Stock */}

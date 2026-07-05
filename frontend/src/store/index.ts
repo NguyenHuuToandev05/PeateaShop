@@ -100,3 +100,42 @@ export const useWishlistStore = create<WishlistStore>()(
     { name: 'squishy-wishlist' }
   )
 )
+
+// ─── Notification Store ───────────────────────────────────────────────────────
+export interface Notif {
+  id: number
+  type: 'order' | 'taobao' | 'promo'
+  title: string
+  message: string
+  time: string
+  read: boolean
+}
+
+interface NotifStore {
+  notifs: Notif[]
+  add: (notif: Omit<Notif, 'id' | 'read'>) => void
+  markRead: (id: number) => void
+  markAllRead: () => void
+  remove: (id: number) => void
+  unreadCount: () => number
+}
+
+export const useNotifStore = create<NotifStore>()(
+  persist(
+    (set, get) => ({
+      notifs: [],
+      add: (notif) =>
+        set((s) => ({
+          notifs: [{ ...notif, id: Date.now(), read: false }, ...s.notifs],
+        })),
+      markRead: (id) =>
+        set((s) => ({ notifs: s.notifs.map(n => n.id === id ? { ...n, read: true } : n) })),
+      markAllRead: () =>
+        set((s) => ({ notifs: s.notifs.map(n => ({ ...n, read: true })) })),
+      remove: (id) =>
+        set((s) => ({ notifs: s.notifs.filter(n => n.id !== id) })),
+      unreadCount: () => get().notifs.filter(n => !n.read).length,
+    }),
+    { name: 'squishy-notifs' }
+  )
+)

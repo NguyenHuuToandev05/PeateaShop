@@ -65,6 +65,7 @@ export interface Order {
   paymentStatus: 'PENDING' | 'PAID' | 'REFUNDED'
   status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'COMPLETED' | 'CANCELLED'
   adminNote?: string
+  paymentProofUrl?: string
   items: OrderItem[]
   createdAt: string
   updatedAt: string
@@ -100,7 +101,6 @@ export interface DashboardData {
   recentOrders: Order[]
 }
 
-// ─── Cart ─────────────────────────────────────────────────────────────────────
 export interface CartItem {
   product: Product
   variant?: string

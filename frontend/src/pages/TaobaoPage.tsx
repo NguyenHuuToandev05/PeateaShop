@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CheckCircle } from 'lucide-react'
 import { taobaoService } from '../services/api'
 import toast from 'react-hot-toast'
+import { useNotifStore } from '../store'
 import { Link } from 'react-router-dom'
 
 export default function TaobaoPage() {
@@ -12,6 +13,7 @@ export default function TaobaoPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState<string | null>(null)
+  const addNotif = useNotifStore((s) => s.add)
 
   const set = (k: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -28,7 +30,14 @@ export default function TaobaoPage() {
         ...form, quantity: Number(form.quantity),
         estimatedPriceCny: form.estimatedPriceCny ? Number(form.estimatedPriceCny) : undefined,
       })
-      setDone(res.data.data?.orderCode ?? 'TB-' + Date.now())
+      const code = res.data.data?.orderCode ?? 'TB-' + Date.now()
+      addNotif({
+        type: 'taobao',
+        title: 'Order Taobao đã gửi! 📦',
+        message: `${code} đã được ghi nhận. Chúng mình sẽ liên hệ xác nhận giá và chi tiết sớm nhé!`,
+        time: 'Vừa xong',
+      })
+      setDone(code)
     } catch {
       setDone('TB-' + Date.now())
     } finally {

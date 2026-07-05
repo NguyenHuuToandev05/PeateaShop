@@ -119,6 +119,7 @@ public class OrderServiceImpl {
                 .subtotal(o.getSubtotal()).shippingFee(o.getShippingFee()).total(o.getTotal())
                 .paymentMethod(o.getPaymentMethod().name()).paymentStatus(o.getPaymentStatus().name())
                 .status(o.getStatus().name()).adminNote(o.getAdminNote())
+                .paymentProofUrl(o.getPaymentProofUrl())
                 .items(o.getItems().stream().map(this::toItemResponse).collect(Collectors.toList()))
                 .createdAt(o.getCreatedAt()).updatedAt(o.getUpdatedAt()).build();
     }

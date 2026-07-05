@@ -31,7 +31,7 @@ const MOCK_DASH: DashboardData = {
 const METRICS = (d: DashboardData) => [
   { label: 'Total Orders', value: d.totalOrders, icon: ShoppingBag, color: 'text-blue-500', bg: 'bg-blue-50' },
   { label: 'Pending Orders', value: d.pendingOrders, icon: Clock, color: 'text-yellow-500', bg: 'bg-yellow-50' },
-  { label: "Today's Revenue", value: `₱${d.todayRevenue.toLocaleString()}`, icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-50' },
+  { label: "Today's Revenue", value: `${d.todayRevenue.toLocaleString('vi-VN')}đ`, icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-50' },
   { label: 'Total Customers', value: d.totalCustomers, icon: Users, color: 'text-purple-500', bg: 'bg-purple-50' },
   { label: 'New Taobao Orders', value: d.newTaobaoOrders, icon: Package, color: 'text-pink-500', bg: 'bg-pink-50' },
 ]
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
                 <tr key={o.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-5 py-3 font-bold text-pink-500">{o.orderCode}</td>
                   <td className="px-5 py-3 text-gray-700">{o.recipientName}</td>
-                  <td className="px-5 py-3 font-semibold">₱{o.total.toLocaleString()}</td>
+                  <td className="px-5 py-3 font-semibold">₱{o.total.toLocaleString('vi-VN')}đ</td>
                   <td className="px-5 py-3">
                     <span className={`text-xs font-semibold px-2 py-1 rounded-full
                       ${o.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
