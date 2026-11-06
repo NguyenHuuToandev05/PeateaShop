@@ -1,194 +1,65 @@
-import { useEffect, useState, useCallback } from 'react'
-import { SlidersHorizontal, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { SlidersHorizontal, X, Search, ArrowRight, PackageOpen } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard'
 import { productService, categoryService } from '../services/api'
 import type { Product, Category } from '../types'
 
-const vnd = (n: number) => n.toLocaleString('vi-VN') + 'đ'
-
-const MOCK_PRODUCTS: Product[] = [
-  { id: 1, name: 'Strawberry Mochi Squishy', description: '', price: 189000, stock: 24, imageUrls: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'], variants: ['Pink','Yellow','Mint'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 128, createdAt: '' },
-  { id: 2, name: 'Bunny Plushie Pillow', description: '', price: 349000, stock: 12, imageUrls: ['https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 94, createdAt: '' },
-  { id: 3, name: 'Rainbow Cat Figurine Set', description: '', price: 420000, stock: 8, imageUrls: ['https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400'], variants: [], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 47, createdAt: '' },
-  { id: 4, name: 'Teddy Bear Plush Buddy', description: '', price: 280000, stock: 0, imageUrls: ['https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 203, createdAt: '' },
-  { id: 5, name: 'Fox Kitsune Mask Set', description: '', price: 350000, stock: 15, imageUrls: ['https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=400'], variants: [], categoryId: 3, categoryName: 'Stationery', active: true, newArrival: true, featured: false, soldCount: 30, createdAt: '' },
-  { id: 6, name: 'Cloud Pillow Squishy', description: '', price: 199000, stock: 5, imageUrls: ['https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=400'], variants: ['White','Pink'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: false, featured: false, soldCount: 60, createdAt: '' },
-]
-const MOCK_CATS: Category[] = [
-  { id: 1, name: 'Squishy', description: '', imageUrl: '', active: true, productCount: 4 },
-  { id: 2, name: 'Plushie', description: '', imageUrl: '', active: true, productCount: 3 },
-  { id: 3, name: 'Stationery', description: '', imageUrl: '', active: true, productCount: 2 },
-]
-
 export default function ShopPage() {
+  const [params, setParams] = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [showFilter, setShowFilter] = useState(false)
-
-  // Filters
-  const [selectedCat, setSelectedCat] = useState<number | null>(null)
   const [maxPrice, setMaxPrice] = useState(1000000)
-  const [newOnly, setNewOnly] = useState(false)
+  const [retry, setRetry] = useState(0)
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [total, setTotal] = useState(0)
+  const keyword = params.get('q') || ''
+  const categoryId = params.get('category') || ''
+  const newOnly = params.get('new') === '1'
+  const sort = params.get('sort') || 'newest'
+  const [search, setSearch] = useState(keyword)
 
-  const loadData = useCallback(async () => {
-    setLoading(true)
-    try {
-      const [pRes, cRes] = await Promise.all([
-        productService.search({ categoryId: selectedCat, maxPrice, newArrival: newOnly || undefined }),
-        categoryService.getAll(),
-      ])
-      setProducts(pRes.data.data?.content ?? MOCK_PRODUCTS)
-      setCategories(cRes.data.data ?? MOCK_CATS)
-    } catch {
-      setProducts(MOCK_PRODUCTS)
-      setCategories(MOCK_CATS)
-    } finally {
-      setLoading(false)
-    }
-  }, [selectedCat, maxPrice, newOnly])
+  useEffect(() => { setSearch(keyword) }, [keyword])
+  useEffect(() => { categoryService.getAll().then(r => setCategories(r.data.data ?? [])).catch(() => {}) }, [])
+  useEffect(() => { setPage(0) }, [keyword, categoryId, newOnly, sort, maxPrice])
+  useEffect(() => {
+    let active = true
+    setLoading(true); setError(false)
+    const timer = setTimeout(() => {
+      productService.search({ keyword: keyword || undefined, categoryId: categoryId || undefined, maxPrice, newArrival: newOnly || undefined, sort, page, size: 12 })
+        .then(r => { if (active) { const data = r.data.data; setProducts(data?.content ?? []); setTotal(data?.totalElements ?? data?.content?.length ?? 0); setTotalPages(data?.totalPages ?? 1) } })
+        .catch(() => { if (active) { setProducts([]); setError(true) } })
+        .finally(() => { if (active) setLoading(false) })
+    }, 250)
+    return () => { active = false; clearTimeout(timer) }
+  }, [keyword, categoryId, newOnly, sort, maxPrice, page, retry])
 
-  useEffect(() => { loadData() }, [loadData])
-
-  const filtered = products.filter(p =>
-    (selectedCat == null || p.categoryId === selectedCat) &&
-    p.price <= maxPrice &&
-    (!newOnly || p.newArrival)
-  )
-
-  const clearFilters = () => { setSelectedCat(null); setMaxPrice(1000); setNewOnly(false) }
-
-  const FilterPanel = () => (
-    <div className="card p-5 space-y-5">
-      <div className="flex items-center gap-2 font-bold text-gray-700">
-        <SlidersHorizontal size={16} className="text-pink-500" />
-        Filters
-      </div>
-
-      {/* Category */}
-      <div>
-        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Category</p>
-        <div className="space-y-2">
-          <button
-            onClick={() => setSelectedCat(null)}
-            className={`w-full text-left px-3 py-2 rounded-xl text-sm font-semibold transition-colors
-              ${selectedCat == null ? 'bg-pink-500 text-white' : 'text-gray-600 hover:bg-pink-50'}`}
-          >
-            ● All Products
-          </button>
-          {categories.map(c => (
-            <button
-              key={c.id}
-              onClick={() => setSelectedCat(c.id)}
-              className={`w-full text-left px-3 py-2 rounded-xl text-sm font-semibold transition-colors
-                ${selectedCat === c.id ? 'bg-pink-500 text-white' : 'text-gray-600 hover:bg-pink-50'}`}
-            >
-              ● {c.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Price range */}
-      <div>
-        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-          Price Range <span className="text-pink-500 normal-case font-bold">0đ – {vnd(maxPrice)}</span>
-        </p>
-        <input
-          type="range" min={50000} max={1000000} step={50000} value={maxPrice}
-          onChange={e => setMaxPrice(+e.target.value)}
-          className="w-full accent-pink-500"
-        />
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
-          <span>50.000đ</span><span>1.000.000đ</span>
-        </div>
-      </div>
-
-      {/* New arrivals toggle */}
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-gray-700">New Arrivals Only</span>
-        <button
-          onClick={() => setNewOnly(v => !v)}
-          className={`w-11 h-6 rounded-full transition-colors relative ${newOnly ? 'bg-pink-500' : 'bg-gray-200'}`}
-        >
-          <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${newOnly ? 'left-6' : 'left-1'}`} />
-        </button>
-      </div>
-
-      <button onClick={clearFilters} className="text-pink-500 text-sm font-semibold hover:underline">
-        Clear filters
-      </button>
-    </div>
-  )
-
+  const update = (key: string, value: string) => {
+    const next = new URLSearchParams(params)
+    if (value) next.set(key, value); else next.delete(key)
+    setPage(0); setParams(next)
+  }
+  const clear = () => { setParams({}); setMaxPrice(1000000); setSearch(''); setPage(0) }
+  const filters = <>
+    <div className="filter-title">Bộ lọc <SlidersHorizontal size={16} /></div>
+    <fieldset><legend>Danh mục</legend><button className={`category-filter ${!categoryId ? 'selected' : ''}`} onClick={() => update('category', '')}>Tất cả sản phẩm <ArrowRight size={13} /></button>{categories.map(c => <button key={c.id} className={`category-filter ${categoryId === String(c.id) ? 'selected' : ''}`} onClick={() => update('category', String(c.id))}>{c.name}<span>{c.productCount}</span></button>)}</fieldset>
+    <fieldset><legend>Khoảng giá</legend><label htmlFor={showFilter ? 'mobile-price' : 'price'} className="price-label">Tối đa {maxPrice.toLocaleString('vi-VN')} ₫</label><input id={showFilter ? 'mobile-price' : 'price'} type="range" min={50000} max={1000000} step={50000} value={maxPrice} onChange={e => { setPage(0); setMaxPrice(Number(e.target.value)) }} /><div className="range-labels"><span>50.000 ₫</span><span>1.000.000 ₫</span></div></fieldset>
+    <label className="new-filter"><input type="checkbox" checked={newOnly} onChange={e => update('new', e.target.checked ? '1' : '')} /> Chỉ sản phẩm mới</label>
+    <button className="clear-filters" onClick={clear}>Xóa bộ lọc <X size={13} /></button>
+  </>
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="mb-6">
-        <p className="text-pink-500 text-sm font-bold mb-1">✦ Browse our collection</p>
-        <div className="flex items-end justify-between">
-          <div>
-            <h1 className="text-2xl font-black text-gray-800">Shop All Products</h1>
-            <p className="text-gray-400 text-sm mt-1">{filtered.length} items found</p>
-          </div>
-          <button
-            onClick={() => setShowFilter(v => !v)}
-            className="md:hidden flex items-center gap-2 btn-outline py-2 px-4 text-sm"
-          >
-            <SlidersHorizontal size={14} /> Filters
-          </button>
-        </div>
-      </div>
-
-      <div className="flex gap-6">
-        {/* Sidebar – desktop */}
-        <aside className="hidden md:block w-64 flex-shrink-0">
-          <FilterPanel />
-        </aside>
-
-        {/* Mobile filter drawer */}
-        {showFilter && (
-          <div className="fixed inset-0 z-50 md:hidden">
-            <div className="absolute inset-0 bg-black/30" onClick={() => setShowFilter(false)} />
-            <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-5 max-h-[80vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-lg">Filters</h3>
-                <button onClick={() => setShowFilter(false)}><X size={20} /></button>
-              </div>
-              <FilterPanel />
-            </div>
-          </div>
-        )}
-
-        {/* Product grid */}
-        <div className="flex-1">
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="card animate-pulse">
-                  <div className="aspect-square bg-pink-100 rounded-t-2xl" />
-                  <div className="p-3 space-y-2">
-                    <div className="h-3 bg-pink-100 rounded w-1/2" />
-                    <div className="h-4 bg-pink-100 rounded" />
-                    <div className="h-3 bg-pink-100 rounded w-1/3" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-5xl mb-4">🔍</div>
-              <p className="font-bold text-gray-600 mb-2">No products found</p>
-              <p className="text-sm text-gray-400">Try adjusting your filters</p>
-              <button onClick={clearFilters} className="btn-primary mt-4 px-6 py-2 text-sm">Clear filters</button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {filtered.map(p => <ProductCard key={p.id} product={p} />)}
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="shell shop-page">
+      <div className="shop-heading"><p className="eyebrow">THE PEATEA EDIT</p><h1>{newOnly ? 'Một chút mới mẻ.' : 'Một góc nhỏ, thật xinh.'}</h1><p>Chọn món đồ khiến ngày của bạn dễ thương hơn.</p></div>
+      <div className="shop-toolbar"><form onSubmit={e => { e.preventDefault(); update('q', search.trim()) }} className="shop-search"><Search size={17} /><input aria-label="Tìm sản phẩm" placeholder="Tìm món đồ bạn thích..." value={search} onChange={e => setSearch(e.target.value)} /><button type="submit" aria-label="Tìm kiếm"><ArrowRight size={18} /></button></form><div className="shop-sort"><span>{loading ? 'Đang tải...' : error ? 'Chưa thể tải sản phẩm' : `${total} sản phẩm`}</span><select aria-label="Sắp xếp sản phẩm" value={sort} onChange={e => update('sort', e.target.value)}><option value="newest">Mới nhất</option><option value="price_asc">Giá: thấp đến cao</option><option value="price_desc">Giá: cao đến thấp</option><option value="popular">Bán chạy</option></select><button className="mobile-filter-toggle" onClick={() => setShowFilter(true)} aria-label="Mở bộ lọc"><SlidersHorizontal size={18} /></button></div></div>
+      <div className="shop-body"><aside className="shop-sidebar">{!showFilter && filters}</aside><section className="shop-results" aria-label="Danh sách sản phẩm" aria-live="polite">
+        {(keyword || categoryId || newOnly || maxPrice < 1000000) && <div className="active-filters"><span>{keyword ? `Tìm kiếm: “${keyword}”` : 'Đang áp dụng bộ lọc'}</span><button onClick={clear}>Xóa tất cả <X size={12} /></button></div>}
+        {loading ? <div className="shop-product-grid">{Array.from({ length: 6 }, (_, i) => <div className="product-skeleton" key={i}><div /><span /><span /></div>)}</div> : error || !products.length ? <div className="catalog-message"><PackageOpen size={36} strokeWidth={1} /><h2>{error ? 'Chưa thể tải bộ sưu tập' : 'Chưa tìm thấy món đồ phù hợp'}</h2><p>{error ? 'Vui lòng kiểm tra kết nối hoặc thử lại sau.' : 'Thử từ khóa khác hoặc điều chỉnh bộ lọc của bạn.'}</p><button className="btn-outline" onClick={error ? () => setRetry(v => v + 1) : clear}>{error ? 'Thử lại' : 'Xóa bộ lọc'}<ArrowRight size={16} /></button></div> : <><div className="shop-product-grid">{products.map(p => <ProductCard key={p.id} product={p} />)}</div>{totalPages > 1 && <div className="pagination"><button disabled={page === 0} onClick={() => setPage(p => p - 1)}>Trang trước</button><span>{page + 1} / {totalPages}</span><button disabled={page + 1 >= totalPages} onClick={() => setPage(p => p + 1)}>Trang sau</button></div>}</>}
+      </section></div>
+      {showFilter && <div className="filter-modal"><button className="modal-backdrop" aria-label="Đóng bộ lọc" onClick={() => setShowFilter(false)} /><div role="dialog" aria-modal="true" aria-label="Bộ lọc sản phẩm" className="filter-drawer"><button className="filter-close icon-button" aria-label="Đóng bộ lọc" onClick={() => setShowFilter(false)}><X size={20} /></button>{filters}<button className="btn-primary" onClick={() => setShowFilter(false)}>Xem kết quả <ArrowRight size={16} /></button></div></div>}
     </div>
   )
 }
