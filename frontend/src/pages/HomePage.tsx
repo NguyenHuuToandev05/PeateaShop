@@ -1,166 +1,70 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight, Star } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, PackageCheck, HeartHandshake, Truck, MoveUpRight, Leaf } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard'
 import { productService } from '../services/api'
 import type { Product } from '../types'
 
-const REVIEWS = [
-  { initials: 'MS', name: 'Maria Santos', product: 'Bunny Plushie Pillow', text: 'Super cute and arrived so fast! The quality is amazing, my daughter loves it 💕', rating: 5 },
-  { initials: 'JL', name: 'Jasmine Lim', product: 'Strawberry Mochi Squishy', text: 'Ordered 3 times already! Packaging is always so pretty and the squishies are sooo satisfying 🌸', rating: 5 },
-  { initials: 'BD', name: 'Bea Dela Cruz', product: 'Taobao Service', text: 'Hassle-free! They handled everything from ordering to delivery. Will definitely use again ✨', rating: 5 },
-]
+const BEAR = 'https://images.unsplash.com/photo-1602734846297-9299fc2d4703?auto=format&fit=crop&w=1200&q=85'
+const JOURNAL = 'https://images.unsplash.com/photo-1523634540939-0be5fba32c8f?auto=format&fit=crop&w=900&q=85'
+const SOFT = 'https://images.unsplash.com/photo-1562040506-a9b32cb51b94?auto=format&fit=crop&w=900&q=85'
 
 export default function HomePage() {
   const [featured, setFeatured] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-
+  const [error, setError] = useState(false)
+  const [attempt, setAttempt] = useState(0)
   useEffect(() => {
-    productService.getFeatured()
-      .then(r => setFeatured(r.data.data ?? MOCK_FEATURED))
-      .catch(() => setFeatured(MOCK_FEATURED))
-      .finally(() => setLoading(false))
-  }, [])
+    let active = true
+    setLoading(true); setError(false)
+    productService.getFeatured().then(r => { if (active) setFeatured(r.data.data ?? []) })
+      .catch(() => { if (active) setError(true) }).finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [attempt])
 
   return (
-    <div className="min-h-screen">
-      {/* ── Hero ── */}
-      <section className="bg-hero-gradient px-4 py-16 md:py-24">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
-          <div className="flex-1">
-            <span className="inline-flex items-center gap-2 bg-white/60 backdrop-blur text-pink-500
-                             text-xs font-bold px-3 py-1.5 rounded-full mb-5 border border-pink-200">
-              🌟 New arrivals just dropped ✦
-            </span>
-            <h1 className="text-4xl md:text-5xl font-black text-gray-800 leading-tight mb-3">
-              Peatea Squishy  
-            </h1>
-            <p className="text-2xl mb-2">🌸</p>
-            <p className="text-gray-600 font-medium mb-8 max-w-md">
-              Your one-stop shop for adorable squishies, plushies &amp; stationery — plus hassle-free Taobao ordering service!
-              <span className="ml-1">🎀</span>
-            </p>
-            <div className="flex gap-3 flex-wrap">
-              <Link to="/shop" className="btn-primary px-8">Shop Now 🛍️</Link>
-              <Link to="/taobao" className="btn-outline px-8">Taobao Service</Link>
-            </div>
-          </div>
-          {/* Mascot */}
-          <div className="flex-shrink-0">
-            <div className="w-52 h-52 md:w-64 md:h-64 bg-pink-200/60 rounded-full flex items-center
-                            justify-center relative">
-              <div className="w-40 h-40 md:w-52 md:h-52 bg-pink-300/70 rounded-full flex items-center
-                              justify-center text-7xl select-none">
-                🐷
-              </div>
-              {/* floating deco */}
-              {['♡','✦','⭐','♡'].map((d, i) => (
-                <span key={i} className="absolute text-pink-400 font-bold animate-pulse"
-                  style={{ top: `${[10,5,75,80][i]}%`, left: `${[10,80,5,85][i]}%`, fontSize: '14px' }}>
-                  {d}
-                </span>
-              ))}
-            </div>
-          </div>
+    <div className="home-page">
+      <section className="hero-section shell">
+        <div className="hero-copy">
+          <p className="eyebrow"><span className="tiny-line" /> A LITTLE JOY, EVERY DAY</p>
+          <h1>Những điều nhỏ.<br /><em>Niềm vui lớn.</em></h1>
+          <p className="hero-description">Một người bạn mềm mại, một món đồ thật xinh.<br className="desktop-break" /> Peatea chọn những điều dễ thương để ngày của bạn<br className="desktop-break" /> nhẹ nhàng hơn một chút.</p>
+          <div className="hero-actions"><Link to="/shop" className="btn-primary">Khám phá cửa hàng <ArrowUpRight size={17} /></Link><Link to="/shop?new=1" className="text-link">Có gì mới? <ArrowRight size={16} /></Link></div>
+          <div className="hero-footnote"><Leaf size={16} strokeWidth={1.4} /><span>Được chọn bằng sự quan tâm, dành cho bạn.</span></div>
+        </div>
+        <div className="hero-visual">
+          <img className="hero-photo" src={BEAR} alt="Chú gấu bông nâu mềm mại với chiếc nơ nhỏ, trên nền tối giản" {...{ fetchpriority: 'high' }} />
+          <span className="hero-photo-note">SOFT THINGS. SLOW MOMENTS.</span>
+          <div className="hero-photo-bottom"><div><span>THE SOFT SIDE OF LIFE</span><p>Mềm mại theo cách của bạn.</p></div><Link to="/shop" aria-label="Khám phá bộ sưu tập"><MoveUpRight size={23} strokeWidth={1.2} /></Link></div>
+          <div className="hero-stamp"><Leaf size={19} strokeWidth={1} /><span>small things<br /><i>with love</i></span></div>
         </div>
       </section>
 
-      {/* ── Featured Products ── */}
-      <section className="max-w-7xl mx-auto px-4 py-14">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <p className="text-pink-500 text-sm font-bold mb-1">✦ Hand-picked for you</p>
-            <h2 className="text-2xl font-black text-gray-800">Featured Products</h2>
-          </div>
-          <Link to="/shop" className="flex items-center gap-1 text-pink-500 text-sm font-bold hover:gap-2 transition-all">
-            See all <ChevronRight size={16} />
-          </Link>
+      <div className="service-strip shell">
+        {[{ icon: PackageCheck, title: 'Chọn lựa có tâm', text: 'Chăm chút từng món đồ' }, { icon: Truck, title: 'Giao hàng toàn quốc', text: 'Niềm vui đến tận cửa' }, { icon: HeartHandshake, title: 'Luôn ở đây vì bạn', text: 'Tư vấn trước & sau mua' }].map(({ icon: Icon, title, text }) => <div key={title}><Icon size={23} strokeWidth={1.25} /><span><strong>{title}</strong><small>{text}</small></span></div>)}
+      </div>
+
+      <section className="shell collection-section">
+        <div className="section-heading"><div><p className="eyebrow">THE LITTLE COLLECTIONS</p><h2>Tìm một chút <em>niềm vui.</em></h2></div><p>Cho bạn, hoặc cho một người đặc biệt.</p></div>
+        <div className="collection-grid">
+          <Link to="/shop?q=squishy" className="collection-card squishy-collection"><div className="squishy-art" aria-hidden="true"><div className="squishy-orbit" /><div className="mochi mochi-back" /><div className="mochi mochi-front"><span /><span /></div><span className="art-caption">TAKE A BREATH. GIVE IT A SQUEEZE.</span></div><div className="collection-caption"><div><small>MỘT CHÚT THƯ GIÃN</small><h3>Squishy</h3></div><ArrowUpRight size={22} strokeWidth={1.3} /></div></Link>
+          <Link to="/shop?q=plush" className="collection-card"><img src={SOFT} alt="Gấu bông thủ công với gam màu ấm áp" loading="lazy" /><div className="collection-caption"><div><small>MỘT CÁI ÔM THẬT ÊM</small><h3>Gấu bông & plushie</h3></div><ArrowUpRight size={22} strokeWidth={1.3} /></div></Link>
+          <Link to="/shop?q=stationery" className="collection-card"><img src={JOURNAL} alt="Sổ tay và những vật dụng cho một ngày bình yên" loading="lazy" /><div className="collection-caption"><div><small>CHO GÓC NHỎ CỦA BẠN</small><h3>Văn phòng phẩm</h3></div><ArrowUpRight size={22} strokeWidth={1.3} /></div></Link>
         </div>
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="card animate-pulse">
-                <div className="aspect-square bg-pink-100 rounded-t-2xl" />
-                <div className="p-3 space-y-2">
-                  <div className="h-3 bg-pink-100 rounded w-1/2" />
-                  <div className="h-4 bg-pink-100 rounded w-3/4" />
-                  <div className="h-3 bg-pink-100 rounded w-1/3" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {featured.map(p => <ProductCard key={p.id} product={p} />)}
-          </div>
-        )}
       </section>
 
-      {/* ── Taobao CTA ── */}
-      <section className="bg-taobao-gradient mx-4 md:mx-8 rounded-3xl px-8 py-14 text-center mb-14">
-        <div className="text-4xl mb-4">🛒</div>
-        <h2 className="text-2xl md:text-3xl font-black text-white mb-3">
-          Want something from Taobao?
-        </h2>
-        <p className="text-white/90 font-medium mb-6 max-w-lg mx-auto">
-          We'll order it for you! Share the Taobao link and we'll handle everything —
-          purchasing, shipping, and delivery straight to your door. No Chinese account needed! 🎉
-        </p>
-        <div className="flex flex-wrap justify-center gap-3 mb-8 text-sm">
-          {[
-            '1 Find your item on Taobao',
-            '2 Submit the link to us',
-            '3 We order & ship it for you',
-            '4 Receive at your door! 📦',
-          ].map(step => (
-            <span key={step} className="bg-white/20 text-white font-semibold px-4 py-2 rounded-full backdrop-blur">
-              {step}
-            </span>
-          ))}
-        </div>
-        <Link to="/taobao" className="inline-block bg-white text-purple-600 font-extrabold
-                                       px-8 py-3 rounded-full hover:scale-105 transition-transform shadow-lg">
-          Place a Taobao Order 📦
-        </Link>
+      <section className="shell featured-section">
+        <div className="section-heading"><div><p className="eyebrow">CURATED BY PEATEA</p><h2>Những món đồ <em>đáng yêu.</em></h2></div><Link to="/shop" className="text-link">Xem tất cả sản phẩm <ArrowRight size={17} /></Link></div>
+        {loading ? <div className="product-grid">{Array.from({ length: 4 }, (_, i) => <div className="product-skeleton" key={i}><div /><span /><span /></div>)}</div> : featured.length ? <div className="product-grid">{featured.slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}</div> : <div className="catalog-message"><PackageCheck size={28} strokeWidth={1.1} /><h3>{error ? 'Bộ sưu tập đang chờ kết nối' : 'Những điều mới đang được chuẩn bị'}</h3><p>{error ? 'Chúng mình chưa tải được sản phẩm. Bạn có thể thử lại sau một chút.' : 'Ghé lại Peatea để khám phá những món đồ mới nhé.'}</p>{error ? <button className="text-link" onClick={() => setAttempt(a => a + 1)}>Thử tải lại <ArrowRight size={15} /></button> : <Link to="/shop" className="text-link">Ghé cửa hàng <ArrowRight size={15} /></Link>}</div>}
       </section>
 
-      {/* ── Reviews ── */}
-      <section className="max-w-7xl mx-auto px-4 pb-16">
-        <div className="text-center mb-8">
-          <p className="text-pink-500 text-sm font-bold mb-1">✦ Happy customers</p>
-          <h2 className="text-2xl font-black text-gray-800">What they're saying 💕</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {REVIEWS.map((r) => (
-            <div key={r.name} className="card p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-pink-200 rounded-full flex items-center justify-center
-                                font-extrabold text-pink-600 text-sm flex-shrink-0">
-                  {r.initials}
-                </div>
-                <div>
-                  <p className="font-bold text-sm text-gray-800">{r.name}</p>
-                  <p className="text-xs text-gray-400">{r.product}</p>
-                </div>
-              </div>
-              <div className="flex mb-2">
-                {[...Array(r.rating)].map((_, i) => (
-                  <Star key={i} size={12} className="fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
-              <p className="text-sm text-gray-600 leading-relaxed">"{r.text}"</p>
-            </div>
-          ))}
-        </div>
+      <section className="taobao-banner shell">
+        <div className="taobao-number">01 <span>→</span> 02 <span>→</span> Bạn.</div>
+        <div><p className="eyebrow">FROM TAOBAO, WITH CARE</p><h2>Bạn tìm thấy. <em>Peatea mang về.</em></h2><p>Gửi chúng mình đường link món đồ bạn thích.<br />Phần đặt hàng và vận chuyển, để Peatea lo.</p></div>
+        <Link to="/taobao" className="btn-outline">Đặt hộ Taobao <ArrowUpRight size={17} /></Link>
       </section>
+
+      <section className="brand-story shell"><p className="eyebrow">A NOTE FROM PEATEA</p><h2>Không cần thật nhiều.<br />Chỉ cần những điều khiến bạn <em>mỉm cười.</em></h2><p>Peatea tin rằng niềm vui có thể bắt đầu từ những thứ rất nhỏ.<br />Cảm ơn bạn đã để chúng mình trở thành một phần trong ngày của bạn.</p><span className="story-signature">with love, peatea.</span></section>
     </div>
   )
 }
-
-// ── Mock data fallback ─────────────────────────────────────────────────────────
-const MOCK_FEATURED: Product[] = [
-  { id: 1, name: 'Strawberry Mochi Squishy', description: '', price: 189000, stock: 24, imageUrls: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400'], variants: ['Pink','Yellow','Mint'], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 128, createdAt: '' },
-  { id: 2, name: 'Bunny Plushie Pillow', description: '', price: 349000, stock: 12, imageUrls: ['https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 94, createdAt: '' },
-  { id: 3, name: 'Rainbow Cat Figurine Set', description: '', price: 420000, stock: 8, imageUrls: ['https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=400'], variants: [], categoryId: 1, categoryName: 'Squishy', active: true, newArrival: true, featured: true, soldCount: 47, createdAt: '' },
-  { id: 4, name: 'Teddy Bear Plush Buddy', description: '', price: 280000, stock: 0, imageUrls: ['https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=400'], variants: [], categoryId: 2, categoryName: 'Plushie', active: true, newArrival: false, featured: true, soldCount: 203, createdAt: '' },
-]
