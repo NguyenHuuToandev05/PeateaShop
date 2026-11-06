@@ -1,92 +1,48 @@
+import { useEffect, useState } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { ShoppingBag, Heart, UserRound, Bell, Search, Menu, X, ArrowRight } from 'lucide-react'
+import { useCartStore, useWishlistStore, useAuthStore, useNotifStore } from '../../store'
 
-import { Link, NavLink } from 'react-router-dom'
-import { ShoppingCart, Heart, Flower2, User, Bell } from 'lucide-react'
-import { useCartStore, useWishlistStore, useAuthStore } from '../../store'
-import { useNotifStore } from '../../store'
- 
 export default function Navbar() {
-  const itemCount = useCartStore((s) => s.itemCount())
-  const wishlistCount = useWishlistStore((s) => s.ids.length)
-  const { user } = useAuthStore()
-  const unreadCount = useNotifStore((s) => s.unreadCount())
- 
+  const itemCount = useCartStore(s => s.itemCount())
+  const wishlistCount = useWishlistStore(s => s.ids.length)
+  const unreadCount = useNotifStore(s => s.unreadCount())
+  const user = useAuthStore(s => s.user)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const location = useLocation()
+  const navigate = useNavigate()
+  useEffect(() => { setMenuOpen(false); setSearchOpen(false) }, [location.pathname, location.search])
+
+  const links = [['/', 'Trang chủ'], ['/shop', 'Cửa hàng'], ['/shop?new=1', 'Hàng mới'], ['/taobao', 'Đặt hộ Taobao']]
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-pink-100">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-extrabold text-pink-500 text-lg">
-          <Flower2 size={22} className="fill-pink-400 text-pink-500" />
-          Peatea Squishy
-        </Link>
- 
-        {/* Nav links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
-          {[['/', 'Home'], ['/shop', 'Shop'], ['/taobao', 'Taobao Order']].map(([to, label]) => (
-            <NavLink key={to} to={to} end={to === '/'}
-              className={({ isActive }) =>
-                isActive ? 'text-pink-500' : 'text-gray-600 hover:text-pink-400 transition-colors'
-              }>
-              {label}
-            </NavLink>
-          ))}
-        </nav>
- 
-        {/* Icons */}
-        <div className="flex items-center gap-1">
-          {/* Notifications */}
-          <Link to="/notifications" className="relative p-2 hover:bg-pink-50 rounded-full transition-colors">
-            <Bell size={20} className="text-gray-700" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs font-bold
-                               w-5 h-5 rounded-full flex items-center justify-center">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </Link>
- 
-          {/* Wishlist */}
-          <Link to="/wishlist" className="relative p-2 hover:bg-pink-50 rounded-full transition-colors">
-            <Heart size={20} className="text-gray-700" />
-            {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs font-bold
-                               w-5 h-5 rounded-full flex items-center justify-center">
-                {wishlistCount}
-              </span>
-            )}
-          </Link>
- 
-          {/* Cart */}
-          <Link to="/cart" className="relative p-2 hover:bg-pink-50 rounded-full transition-colors">
-            <ShoppingCart size={20} className="text-gray-700" />
-            {itemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs font-bold
-                               w-5 h-5 rounded-full flex items-center justify-center">
-                {itemCount > 9 ? '9+' : itemCount}
-              </span>
-            )}
-          </Link>
- 
-          {/* Auth */}
-          {user ? (
-            <Link to={user.role === 'ADMIN' ? '/admin' : '/account'}
-              className="flex items-center gap-1.5 ml-1 pl-2 border-l border-pink-100">
-              <div className="w-8 h-8 bg-pink-200 rounded-full flex items-center justify-center
-                              font-bold text-pink-600 text-xs">
-                {user.fullName.charAt(0)}
-              </div>
-              <span className="hidden md:block text-sm font-bold text-gray-700 max-w-[80px] truncate">
-                {user.role === 'ADMIN' ? '⚙️ Admin' : user.fullName.split(' ')[0]}
-              </span>
-            </Link>
-          ) : (
-            <Link to="/login"
-              className="ml-1 flex items-center gap-1.5 bg-pink-500 text-white text-sm font-bold
-                         px-4 py-1.5 rounded-full hover:bg-pink-600 transition-colors">
-              <User size={14} /> Đăng nhập
-            </Link>
-          )}
+    <>
+      <div className="announcement"><span>Những món đồ nhỏ, niềm vui mỗi ngày.</span><Link to="/shop">Khám phá Peatea <ArrowRight size={12} /></Link></div>
+      <header className="site-header">
+        <div className="shell nav-inner">
+          <Link to="/" className="brand" aria-label="Peatea — Trang chủ">peatea<span className="brand-dot">.</span><span className="brand-sub">LITTLE THINGS, BIG JOY</span></Link>
+          <nav className="desktop-nav" aria-label="Điều hướng chính">
+            {links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'}
+              className={({ isActive }) => (to === '/shop?new=1' ? location.search.includes('new=1') : isActive && !(to === '/shop' && location.search.includes('new=1'))) ? 'active' : ''}>{label}</NavLink>)}
+          </nav>
+          <div className="nav-actions">
+            <button className="icon-button" aria-label="Tìm sản phẩm" aria-expanded={searchOpen} onClick={() => { setSearchOpen(v => !v); setMenuOpen(false) }}>{searchOpen ? <X size={19} /> : <Search size={19} />}</button>
+            <Link className="icon-button optional-nav-icon" to="/wishlist" aria-label={`Yêu thích, ${wishlistCount} sản phẩm`}><Heart size={19} />{wishlistCount > 0 && <span className="count-dot">{wishlistCount}</span>}</Link>
+            <Link className="icon-button optional-nav-icon" to="/notifications" aria-label={`Thông báo, ${unreadCount} chưa đọc`}><Bell size={18} />{unreadCount > 0 && <span className="count-dot">{unreadCount}</span>}</Link>
+            <Link className="icon-button" to={user ? user.role === 'ADMIN' ? '/admin' : '/account' : '/login'} aria-label={user ? 'Tài khoản của bạn' : 'Đăng nhập'}><UserRound size={19} /></Link>
+            <Link className="icon-button cart-link" to="/cart" aria-label={`Giỏ hàng, ${itemCount} sản phẩm`}><ShoppingBag size={19} /><span className="cart-count">{itemCount}</span></Link>
+            <button className="icon-button mobile-menu-button" onClick={() => { setMenuOpen(v => !v); setSearchOpen(false) }} aria-label={menuOpen ? 'Đóng menu' : 'Mở menu'} aria-expanded={menuOpen}>{menuOpen ? <X size={22} /> : <Menu size={22} />}</button>
+          </div>
         </div>
-      </div>
-    </header>
+        {searchOpen && <form className="shell nav-search" onSubmit={e => { e.preventDefault(); navigate(`/shop${query.trim() ? `?q=${encodeURIComponent(query.trim())}` : ''}`) }}>
+          <Search size={20} /><input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder="Bạn đang tìm món đồ nào?" aria-label="Tên sản phẩm" /><button type="submit">Tìm kiếm <ArrowRight size={16} /></button>
+        </form>}
+        {menuOpen && <nav className="mobile-nav" aria-label="Điều hướng điện thoại">
+          {links.map(([to, label]) => <Link to={to} key={to}>{label}<ArrowRight size={16} /></Link>)}
+          <Link to="/wishlist">Sản phẩm yêu thích <Heart size={16} /></Link><Link to="/notifications">Thông báo <Bell size={16} /></Link>
+        </nav>}
+      </header>
+    </>
   )
 }
